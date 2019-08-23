@@ -3,6 +3,8 @@ module Attenuations
 using HTTP
 using PeriodicTable
 
+export μ, μᵨ
+
 const XCOM_URL = "https://www.physics.nist.gov/cgi-bin/Xcom/data.pl"
 
 μ(Z::Int, keVs) = elements[Z].density.val * μᵨ(Z, keVs)
