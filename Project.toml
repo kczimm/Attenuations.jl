@@ -1,0 +1,8 @@
+name = "Attenuations"
+uuid = "0ff343a0-c53e-11e9-1400-85e187be3184"
+authors = ["Kevin C. Zimmerman <kevinczimmerman@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+PeriodicTable = "7b2266bf-644c-5ea3-82d8-af4bbd25a884"
