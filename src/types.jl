@@ -12,3 +12,8 @@ end
 struct Mixture <: Matter
     formulae::Dict{String, Float64}
 end
+
+struct Material <: Matter
+    ρ::Float64
+    composition::Mixture
+end

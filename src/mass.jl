@@ -26,3 +26,5 @@ function μᵨ(m::Mixture, keVs)
     r = HTTP.request("POST", XCOM_URL, [], encodebody(body))
     parseresponse(r)
 end
+
+μᵨ(m::Material, keVs) = μᵨ(m.composition, keVs)
