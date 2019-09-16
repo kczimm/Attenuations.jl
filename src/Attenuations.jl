@@ -3,7 +3,7 @@ module Attenuations
 using HTTP
 using PeriodicTable
 
-export μ, μᵨ
+export μ, μᵨ, Element, Compound, Mixture, Material
 
 const XCOM_URL = "https://www.physics.nist.gov/cgi-bin/Xcom/data.pl"
 

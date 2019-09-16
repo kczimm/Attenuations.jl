@@ -1,4 +1,6 @@
-function μᵨ(e::Element, keVs)
+μᵨ(e::Element, keV::T) where {T<:Number} = μᵨ(e, [keV])[1]
+
+function μᵨ(e::Element, keVs::AbstractArray{T,1}) where {T<:Number}
     body = requestbody(keVs)
     body["Method"] = "1"
     body["ZNum"] = "$(e.Z)"
@@ -7,7 +9,9 @@ function μᵨ(e::Element, keVs)
     parseresponse(r)
 end
 
-function μᵨ(c::Compound, keVs)
+μᵨ(c::Compound, keV::T) where {T<:Number} = μᵨ(c, [keV])[1]
+
+function μᵨ(c::Compound, keVs::AbstractArray{T,1}) where {T<:Number}
     body = requestbody(keVs)
     body["Method"] = "2"
     body["Formula"] = c.formula
@@ -16,7 +20,9 @@ function μᵨ(c::Compound, keVs)
     parseresponse(r)
 end
 
-function μᵨ(m::Mixture, keVs)
+μᵨ(m::Mixture, keV::T) where {T<:Number} = μᵨ(m, [keV])[1]
+
+function μᵨ(m::Mixture, keVs::AbstractArray{T,1}) where {T<:Number}
     formulae = join(["$k $v" for (k,v) in m.formulae], '\n')
 
     body = requestbody(keVs)
@@ -27,4 +33,6 @@ function μᵨ(m::Mixture, keVs)
     parseresponse(r)
 end
 
-μᵨ(m::Material, keVs) = μᵨ(m.composition, keVs)
+μᵨ(m::Material, keV::T) where {T<:Number} = μᵨ(m, [keV])[1]
+
+μᵨ(m::Material, keVs::AbstractArray{T,1}) where {T<:Number} = μᵨ(m.composition, keVs)

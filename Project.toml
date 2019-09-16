@@ -6,3 +6,4 @@ version = "0.2.0"
 [deps]
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 PeriodicTable = "7b2266bf-644c-5ea3-82d8-af4bbd25a884"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
