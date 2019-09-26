@@ -10,3 +10,21 @@ function HU(u::T, keV::V) where {T<:Number,V<:Number}
     uw = μᵨ(Compound("H2O"), keV)
     (u - uw) / uw * 1000
 end
+
+function HU(u::T, keV::V) where {T<:AbstractArray{<:Number,1},V<:Number}
+    uw = μᵨ(Compound("H2O"), keV)
+    hu = similar(u)
+    for i in eachindex(u)
+        hu[i] = (u[i] - uw) / uw * 1000
+    end
+    hu
+end
+
+function HU(u::T, keV::V) where {T<:AbstractArray{<:Number,2},V<:Number}
+    uw = μᵨ(Compound("H2O"), keV)
+    hu = similar(u)
+    for i in eachindex(u)
+        hu[i] = (u[i] - uw) / uw * 1000
+    end
+    hu
+end
