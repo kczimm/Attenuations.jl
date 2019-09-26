@@ -23,7 +23,7 @@ end
 μᵨ(m::Mixture, keV::T) where {T<:Number} = μᵨ(m, [keV])[1]
 
 function μᵨ(m::Mixture, keVs::AbstractArray{T,1}) where {T<:Number}
-    formulae = join(["$k $v" for (k,v) in m.formulae], '\n')
+    formulae = join(["$k $v" for (k, v) in m.formulae], '\n')
 
     body = requestbody(keVs)
     body["Method"] = "3"
@@ -35,4 +35,5 @@ end
 
 μᵨ(m::Material, keV::T) where {T<:Number} = μᵨ(m, [keV])[1]
 
-μᵨ(m::Material, keVs::AbstractArray{T,1}) where {T<:Number} = μᵨ(m.composition, keVs)
+μᵨ(m::Material, keVs::AbstractArray{T,1}) where {T<:Number} =
+    μᵨ(m.composition, keVs)
