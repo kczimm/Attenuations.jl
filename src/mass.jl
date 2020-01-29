@@ -1,28 +1,26 @@
-function μᵨ(e::Element, keVs)
-    body = requestbody(keVs)
-    body["Method"] = "1"
-    body["ZNum"] = "$(e.Z)"
-
-    r = HTTP.request("POST", XCOM_URL, [], encodebody(body))
-    parseresponse(r)
+function μᵨ(e::Element, energies::AbstractArray{T}) where {T<:Unitful.Energy}
+    params = Dict("Method" => "1", "ZNum" => "$(e.Z)")
+    getNIST(params, energies)
 end
 
-function μᵨ(c::Compound, keVs)
-    body = requestbody(keVs)
-    body["Method"] = "2"
-    body["Formula"] = c.formula
+μᵨ(e::Element, energies::AbstractArray{T}) where {T<:Number} =
+    μᵨ(e, (energies)keV)
 
-    r = HTTP.request("POST", XCOM_URL, [], encodebody(body))
-    parseresponse(r)
+function μᵨ(c::Compound, energies::AbstractArray{T}) where {T<:Unitful.Energy}
+    params = Dict("Method" => "2", "Formula" => c.formula)
+    getNIST(params, energies)
 end
 
-function μᵨ(m::Mixture, keVs)
-    formulae = join(["$k $v" for (k,v) in m.formulae], '\n')
+μᵨ(c::Compound, energies::AbstractArray{T}) where {T<:Number} =
+    μᵨ(c, (energies)keV)
 
-    body = requestbody(keVs)
-    body["Method"] = "3"
-    body["Formulae"] = formulae
-
-    r = HTTP.request("POST", XCOM_URL, [], encodebody(body))
-    parseresponse(r)
+function μᵨ(m::Mixture, energies::AbstractArray{T}) where {T<:Unitful.Energy}
+    params = Dict(
+        "Method" => "3",
+        "Formulae" => join(["$k $v" for (k, v) in m.formulae], '\n'),
+    )
+    getNIST(params, energies)
 end
+
+μᵨ(m::Mixture, energies::AbstractArray{T}) where {T<:Number} =
+    μᵨ(m, (energies)keV)

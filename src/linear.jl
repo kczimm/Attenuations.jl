@@ -1,1 +1,4 @@
-μ(e::Element, keVs) = elements[e.Z].density.val * μᵨ(e, keVs)
+function μ(e::Element, energies::AbstractArray{<:Number})
+    u = μᵨ(e, energies)
+    AxisArray(elements[e.Z].density * u, u.axes)
+end

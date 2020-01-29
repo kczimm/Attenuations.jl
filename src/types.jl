@@ -10,5 +10,5 @@ struct Compound <: Matter
 end
 
 struct Mixture <: Matter
-    formulae::Dict{String, Float64}
+    formulae::Dict{String,Float64}
 end
