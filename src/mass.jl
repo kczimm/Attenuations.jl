@@ -31,3 +31,5 @@ end
     μᵨ(m, (energies)keV)
 
 μᵨ(m::Mixture, energy::T) where {T<:Number} = μᵨ(m, [energy])[1]
+
+μᵨ(e; kwargs...) = μᵨ(Mixture(Dict([("$k", v) for (k, v) in kwargs])), e)

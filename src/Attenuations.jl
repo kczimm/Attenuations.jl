@@ -7,9 +7,11 @@ using Unitful
 
 import Unitful: g, cm, keV, MeV
 
-export μ, μᵨ, Element, Compound, Mixture
+export μ, μᵨ, Element, Compound, Mixture, data
 
 const XCOM_URL = "https://www.physics.nist.gov/cgi-bin/Xcom/data.pl"
+
+data(a::AbstractArray{T}) where {T<:Unitful.AbstractQuantity} = [i.val for i in a.data]
 
 include("types.jl")
 include("linear.jl")
