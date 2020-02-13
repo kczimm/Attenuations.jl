@@ -12,11 +12,3 @@ end
 struct Mixture <: Matter
     formulae::Dict{String,Float64}
 end
-
-struct Material <: Matter
-	name
-	ZdivA
-	I
-	ρ
-	composition::Dict{Int, <:AbstractFloat}
-end

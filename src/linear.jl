@@ -1,3 +1,5 @@
+struct Material end
+
 function μ(e::Element, energies::AbstractArray{<:Number})
     u = μᵨ(e, energies)
 	AxisArray((elements[e.Z].density)g/cm^3 * u, u.axes)

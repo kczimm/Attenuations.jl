@@ -1,11 +1,10 @@
 name = "Attenuations"
 uuid = "0ff343a0-c53e-11e9-1400-85e187be3184"
 authors = ["Kevin C. Zimmerman <kevinczimmerman@gmail.com>"]
-version = "0.3.0"
+version = "0.4.0"
 
 [deps]
 AxisArrays = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-PeriodicTable = "7b2266bf-644c-5ea3-82d8-af4bbd25a884"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"

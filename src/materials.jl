@@ -1,3 +1,52 @@
+module Materials
+
+using ..Attenuations: Matter, WithCoherent
+using ..Attenuations.Elements: Elements
+using Unitful
+using Unitful: eV, g, cm
+import ..Attenuations: μ, μᵨ
+
+export μ, μᵨ
+
+struct Material{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
+    name::String
+    Z̸̸A::Float64
+    I::T
+    ρ::S
+    composition::Dict{Int,Float64}
+end
+
+makeMixture(c::Dict{Int,Float64}) =
+    Dict([(Elements[k].symbol, v) for (k, v) in c])
+
+μᵨ(
+   m::Material,
+   energies::AbstractArray{<:Unitful.Energy},
+   a::Type{<:Attenuation},
+) = μᵨ(makeMixture(m.composition), energies, a)
+
+μᵨ(
+  m::Material,
+  energies::AbstractArray{<:Unitful.Energy},
+) = μᵨ(m, energies, WithCoherent)
+
+μ(
+  m::Material,
+  energies::AbstractArray{<:Unitful.Energy},
+  a::Type{<:Attenuation},
+) = m.ρ * μᵨ(m, energies, a)
+
+μ(
+  m::Material,
+  energies::AbstractArray{<:Unitful.Energy},
+) = μ(m, energies, WithCoherent)
+
+Base.show(io::IO, m::Material) = print(
+    io,
+    "$(m.name) Z/A=$(m.Z̸̸A) I=$(m.I) ρ=$(m.ρ)\r\n",
+    join(["$k: $v" for (k, v) in m.composition], "\r\n"),
+)
+
 tissueplastic = Material(
     "A-150 Tissue-Equivalent Plastic",
     0.54903,
@@ -135,7 +184,13 @@ airplastic = Material(
     0.49969,
     86.8eV,
     1.76g / cm^3,
-    Dict(1 => 0.024681, 6 => 0.50161, 8 => 0.004527, 9 => 0.465209, 14 => 0.003973),
+    Dict(
+        1 => 0.024681,
+        6 => 0.50161,
+        8 => 0.004527,
+        9 => 0.465209,
+        14 => 0.003973,
+    ),
 )
 CdTe = Material(
     "Cadmium Telluride",
@@ -277,7 +332,13 @@ leadglass = Material(
     0.42101,
     526.4eV,
     6.22g / cm^3,
-    Dict(8 => 0.156453, 14 => 0.080866, 22 => 0.008092, 33 => 0.002651, 82 => 0.751938),
+    Dict(
+        8 => 0.156453,
+        14 => 0.080866,
+        22 => 0.008092,
+        33 => 0.002651,
+        82 => 0.751938,
+    ),
 )
 LiF = Material(
     "Lithium Fluride",
@@ -363,7 +424,14 @@ emulsionkodak = Material(
     0.48176,
     179.0eV,
     2.2g / cm^3,
-    Dict(1 => 0.0305, 6 => 0.2107, 7 => 0.0721, 8 => 0.1632, 35 => 0.2228, 47 => 0.3007),
+    Dict(
+        1 => 0.0305,
+        6 => 0.2107,
+        7 => 0.0721,
+        8 => 0.1632,
+        35 => 0.2228,
+        47 => 0.3007,
+    ),
 )
 emulsionstandard = Material(
     "Photographic Emulsion (Standard Nuclear)",
@@ -499,3 +567,5 @@ water = Material(
     1.0g / cm^3,
     Dict(1 => 0.111898, 8 => 0.888102),
 )
+
+end # module
