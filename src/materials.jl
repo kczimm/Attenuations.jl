@@ -1,49 +1,64 @@
 module Materials
 
-using ..Attenuations: Matter, WithCoherent
-using ..Attenuations.Elements: Elements
+
+using ..Attenuations: Matter,
+                        Mixture,
+                      Attenuation,
+                      WithCoherent,
+                      bodykey,
+                      formatenergies,
+                      XCOM
+import ..Attenuations: μᵨ
+import ..Attenuations.Elements: μ
+using ..Attenuations.Elements: elements
+
+using AxisArrays
 using Unitful
 using Unitful: eV, g, cm
-import ..Attenuations: μ, μᵨ
 
-export μ, μᵨ
+export μ, μᵨ, materials
 
 struct Material{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
     name::String
-    Z̸̸A::Float64
+    ZAratio::Float64
     I::T
     ρ::S
     composition::Dict{Int,Float64}
 end
 
-makeMixture(c::Dict{Int,Float64}) =
-    Dict([(Elements[k].symbol, v) for (k, v) in c])
-
 μᵨ(
    m::Material,
    energies::AbstractArray{<:Unitful.Energy},
    a::Type{<:Attenuation},
-) = μᵨ(makeMixture(m.composition), energies, a)
+) = μᵨ(Mixture(Dict([(elements[k].symbol, v) for (k, v) in m.composition])), energies, a)
 
-μᵨ(
-  m::Material,
-  energies::AbstractArray{<:Unitful.Energy},
-) = μᵨ(m, energies, WithCoherent)
+μᵨ(m::Material, energies::AbstractArray{<:Unitful.Energy}) =
+    μᵨ(m, energies, WithCoherent)
 
 μ(
   m::Material,
   energies::AbstractArray{<:Unitful.Energy},
   a::Type{<:Attenuation},
-) = m.ρ * μᵨ(m, energies, a)
+) = AxisArray(m.ρ * μᵨ(m, energies, a), Axis{:energy}(energies))
 
-μ(
-  m::Material,
-  energies::AbstractArray{<:Unitful.Energy},
-) = μ(m, energies, WithCoherent)
+μ(m::Material, energies::AbstractArray{<:Unitful.Energy}) =
+    μ(m, energies, WithCoherent)
+
+μᵨ(m::Material, energy::T, a::Type{<:Attenuation}) where {T<:Unitful.Energy} =
+    μᵨ(m, [energy], a)[1]
+
+μᵨ(m::Material, energy::T) where {T<:Unitful.Energy} =
+    μᵨ(m, [energy], WithCoherent)[1]
+
+μ(m::Material, energy::T, a::Type{<:Attenuation}) where {T<:Unitful.Energy} =
+    μ(m, [energy], a)[1]
+
+μ(m::Material, energy::T) where {T<:Unitful.Energy} =
+    μ(m, [energy], WithCoherent)[1]
 
 Base.show(io::IO, m::Material) = print(
     io,
-    "$(m.name) Z/A=$(m.Z̸̸A) I=$(m.I) ρ=$(m.ρ)\r\n",
+    "$(m.name) Z/A=$(m.ZAratio) I=$(m.I) ρ=$(m.ρ)\r\n",
     join(["$k: $v" for (k, v) in m.composition], "\r\n"),
 )
 
@@ -567,5 +582,56 @@ water = Material(
     1.0g / cm^3,
     Dict(1 => 0.111898, 8 => 0.888102),
 )
+
+materials = [
+    tissueplastic,
+    adipose,
+    air,
+    alanine,
+    boneplastic,
+    bakelite,
+    wholeblood,
+    corticalbone,
+    brain,
+    breasttissue,
+    airplastic,
+    CdTe,
+    CaF,
+    CaSO4,
+    ammoniumsulfate,
+    CsI,
+    concrete,
+    concretebarite,
+    eyelens,
+    ferroussulfate,
+    GOS,
+    gafchromicsensor,
+    GaAs,
+    pyrex,
+    leadglass,
+    LiF,
+    LiB4O7,
+    lung,
+    MgB4O7,
+    MgI2,
+    muscle,
+    ovary,
+    emulsionkodak,
+    emulsionstandard,
+    vinyltoluene,
+    polyethylene,
+    mylar,
+    PMMA,
+    polystyrene,
+    teflon,
+    PVC,
+    nylonfilm,
+    testis,
+    softtissue,
+    softtissue4,
+    methane,
+    propane,
+    water,
+]
 
 end # module

@@ -1,21 +1,70 @@
 module Elements
 
-using ..Attenuations: Matter
+using AxisArrays
+using ..Attenuations: Matter,
+                      Attenuation,
+                      WithCoherent,
+                      bodykey,
+                      formatenergies,
+                      XCOM
+import ..Attenuations: μᵨ
 using Unitful
 using Unitful: eV, g, cm
+
+export μ, μᵨ, elements
 
 struct Element{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
     Z::Int
     symbol::String
     name::String
-    Z̸̸A::Float64
+    ZAratio::Float64
     I::T
     ρ::S
 end
 
+function μᵨ(
+    e::Element,
+    energies::AbstractArray{<:Unitful.Energy},
+    a::Type{<:Attenuation},
+)
+    body = Dict{String,String}(
+        "Method" => "1",
+        "ZNum" => "$(e.Z)",
+        bodykey(a) => "on",
+        "Energies" => formatenergies(energies),
+    )
+
+    μᵨ = XCOM(body) * cm^2 ./ g
+    AxisArray(μᵨ, Axis{:energy}(energies))
+end
+
+μᵨ(e::Element, energies::AbstractArray{<:Unitful.Energy}) =
+    μᵨ(e, energies, WithCoherent)
+
+μ(
+  e::Element,
+  energies::AbstractArray{<:Unitful.Energy},
+  a::Type{<:Attenuation},
+) = AxisArray(e.ρ * μᵨ(e, energies, a), Axis{:energy}(energies))
+
+μ(e::Element, energies::AbstractArray{<:Unitful.Energy}) =
+    μ(e, energies, WithCoherent)
+
+μᵨ(e::Element, energy::T, a::Type{<:Attenuation}) where {T<:Unitful.Energy} =
+    μᵨ(e, [energy], a)[1]
+
+μᵨ(e::Element, energy::T) where {T<:Unitful.Energy} =
+    μᵨ(e, [energy], WithCoherent)[1]
+
+μ(e::Element, energy::T, a::Type{<:Attenuation}) where {T<:Unitful.Energy} =
+    μ(e, [energy], a)[1]
+
+μ(e::Element, energy::T) where {T<:Unitful.Energy} =
+    μ(e, [energy], WithCoherent)[1]
+
 Base.show(io::IO, e::Element) = print(
     io,
-    "$(e.Z) $(e.symbol) $(e.name) Z/A=$(e.Z̸̸A) I=$(e.I.val)eV ρ=$(e.ρ.val)g/cm³",
+    "$(e.Z) $(e.symbol) $(e.name) Z/A=$(e.ZAratio) I=$(e.I.val)eV ρ=$(e.ρ.val)g/cm³",
 )
 
 Hydrogen = Element(1, "H", "Hydrogen", 0.99212, 19.2eV, 8.375E-05g / cm^3)
@@ -160,14 +209,13 @@ Protactinium = Element(
 )
 Uranium = Element(92, "U", "Uranium", 0.38651, 890.0eV, 1.895E+01g / cm^3)
 
-Elements = [
+elements = [
     Hydrogen,
     Helium,
     Lithium,
     Beryllium,
     Boron,
     Carbon,
-    Graphite,
     Nitrogen,
     Oxygen,
     Fluorine,
