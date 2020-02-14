@@ -8,8 +8,7 @@ using ..Attenuations: Matter,
                       bodykey,
                       formatenergies,
                       XCOM
-import ..Attenuations: μᵨ
-import ..Attenuations.Elements: μ
+import ..Attenuations: μ, μᵨ
 using ..Attenuations.Elements: elements
 
 using AxisArrays

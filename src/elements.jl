@@ -7,7 +7,7 @@ using ..Attenuations: Matter,
                       bodykey,
                       formatenergies,
                       XCOM
-import ..Attenuations: μᵨ
+import ..Attenuations: μ, μᵨ
 using Unitful
 using Unitful: eV, g, cm
 

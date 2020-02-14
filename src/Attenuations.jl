@@ -22,6 +22,9 @@ export μ,
        WithoutCoherent,
        data
 
+function μ end
+function μᵨ end
+
 abstract type Attenuation end
 
 """
@@ -95,9 +98,6 @@ include("xcom.jl")
 include("compound.jl")
 include("mixture.jl")
 include("elements.jl")
-
-import .Elements: μ
-
 include("materials.jl")
 
 end # module
