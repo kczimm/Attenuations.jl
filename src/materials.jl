@@ -1,13 +1,7 @@
 module Materials
 
-
-using ..Attenuations: Matter,
-                        Mixture,
-                      Attenuation,
-                      WithCoherent,
-                      bodykey,
-                      formatenergies,
-                      XCOM
+using ..Attenuations:
+    Matter, Mixture, Attenuation, WithCoherent, bodykey, formatenergies, XCOM
 import ..Attenuations: μ, μᵨ
 using ..Attenuations.Elements: elements
 
@@ -26,18 +20,22 @@ struct Material{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
 end
 
 μᵨ(
-   m::Material,
-   energies::AbstractArray{<:Unitful.Energy},
-   a::Type{<:Attenuation},
-) = μᵨ(Mixture(Dict([(elements[k].symbol, v) for (k, v) in m.composition])), energies, a)
+    m::Material,
+    energies::AbstractArray{<:Unitful.Energy},
+    a::Type{<:Attenuation},
+) = μᵨ(
+    Mixture(Dict([(elements[k].symbol, v) for (k, v) in m.composition])),
+    energies,
+    a,
+)
 
 μᵨ(m::Material, energies::AbstractArray{<:Unitful.Energy}) =
     μᵨ(m, energies, WithCoherent)
 
 μ(
-  m::Material,
-  energies::AbstractArray{<:Unitful.Energy},
-  a::Type{<:Attenuation},
+    m::Material,
+    energies::AbstractArray{<:Unitful.Energy},
+    a::Type{<:Attenuation},
 ) = AxisArray(m.ρ * μᵨ(m, energies, a), Axis{:energy}(energies))
 
 μ(m::Material, energies::AbstractArray{<:Unitful.Energy}) =

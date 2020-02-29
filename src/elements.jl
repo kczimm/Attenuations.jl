@@ -1,12 +1,8 @@
 module Elements
 
 using AxisArrays
-using ..Attenuations: Matter,
-                      Attenuation,
-                      WithCoherent,
-                      bodykey,
-                      formatenergies,
-                      XCOM
+using ..Attenuations:
+    Matter, Attenuation, WithCoherent, bodykey, formatenergies, XCOM
 import ..Attenuations: μ, μᵨ
 using Unitful
 using Unitful: eV, g, cm
@@ -42,9 +38,9 @@ end
     μᵨ(e, energies, WithCoherent)
 
 μ(
-  e::Element,
-  energies::AbstractArray{<:Unitful.Energy},
-  a::Type{<:Attenuation},
+    e::Element,
+    energies::AbstractArray{<:Unitful.Energy},
+    a::Type{<:Attenuation},
 ) = AxisArray(e.ρ * μᵨ(e, energies, a), Axis{:energy}(energies))
 
 μ(e::Element, energies::AbstractArray{<:Unitful.Energy}) =
@@ -108,22 +104,10 @@ Strontium = Element(38, "Sr", "Strontium", 0.43369, 366.0eV, 2.540E+00g / cm^3)
 Yttrium = Element(39, "Y", "Yttrium", 0.43867, 379.0eV, 4.469E+00g / cm^3)
 Zirconium = Element(40, "Zr", "Zirconium", 0.43848, 393.0eV, 6.506E+00g / cm^3)
 Niobium = Element(41, "Nb", "Niobium", 0.44130, 417.0eV, 8.570E+00g / cm^3)
-Molybdenum = Element(
-    42,
-    "Mo",
-    "Molybdenum",
-    0.43777,
-    424.0eV,
-    1.022E+01g / cm^3,
-)
-Technetium = Element(
-    43,
-    "Tc",
-    "Technetium",
-    0.43919,
-    428.0eV,
-    1.150E+01g / cm^3,
-)
+Molybdenum =
+    Element(42, "Mo", "Molybdenum", 0.43777, 424.0eV, 1.022E+01g / cm^3)
+Technetium =
+    Element(43, "Tc", "Technetium", 0.43919, 428.0eV, 1.150E+01g / cm^3)
 Ruthenium = Element(44, "Ru", "Ruthenium", 0.43534, 441.0eV, 1.241E+01g / cm^3)
 Rhodium = Element(45, "Rh", "Rhodium", 0.43729, 449.0eV, 1.241E+01g / cm^3)
 Palladium = Element(46, "Pd", "Palladium", 0.43225, 470.0eV, 1.202E+01g / cm^3)
@@ -139,42 +123,18 @@ Cesium = Element(55, "Cs", "Cesium", 0.41383, 488.0eV, 1.873E+00g / cm^3)
 Barium = Element(56, "Ba", "Barium", 0.40779, 491.0eV, 3.500E+00g / cm^3)
 Lanthanum = Element(57, "La", "Lanthanum", 0.41035, 501.0eV, 6.154E+00g / cm^3)
 Cerium = Element(58, "Ce", "Cerium", 0.41395, 523.0eV, 6.657E+00g / cm^3)
-Praseodymium = Element(
-    59,
-    "Pr",
-    "Praseodymium",
-    0.41871,
-    535.0eV,
-    6.710E+00g / cm^3,
-)
+Praseodymium =
+    Element(59, "Pr", "Praseodymium", 0.41871, 535.0eV, 6.710E+00g / cm^3)
 Neodymium = Element(60, "Nd", "Neodymium", 0.41597, 546.0eV, 6.900E+00g / cm^3)
-Promethium = Element(
-    61,
-    "Pm",
-    "Promethium",
-    0.42094,
-    560.0eV,
-    7.220E+00g / cm^3,
-)
+Promethium =
+    Element(61, "Pm", "Promethium", 0.42094, 560.0eV, 7.220E+00g / cm^3)
 Samarium = Element(62, "Sm", "Samarium", 0.41234, 574.0eV, 7.460E+00g / cm^3)
 Europium = Element(63, "Eu", "Europium", 0.41457, 580.0eV, 5.243E+00g / cm^3)
-Gadolinium = Element(
-    64,
-    "Gd",
-    "Gadolinium",
-    0.40699,
-    591.0eV,
-    7.900E+00g / cm^3,
-)
+Gadolinium =
+    Element(64, "Gd", "Gadolinium", 0.40699, 591.0eV, 7.900E+00g / cm^3)
 Terbium = Element(65, "Tb", "Terbium", 0.40900, 614.0eV, 8.229E+00g / cm^3)
-Dysprosium = Element(
-    66,
-    "Dy",
-    "Dysprosium",
-    0.40615,
-    628.0eV,
-    8.550E+00g / cm^3,
-)
+Dysprosium =
+    Element(66, "Dy", "Dysprosium", 0.40615, 628.0eV, 8.550E+00g / cm^3)
 Holmium = Element(67, "Ho", "Holmium", 0.40623, 650.0eV, 8.795E+00g / cm^3)
 Erbium = Element(68, "Er", "Erbium", 0.40655, 658.0eV, 9.066E+00g / cm^3)
 Thulium = Element(69, "Tm", "Thulium", 0.40844, 674.0eV, 9.321E+00g / cm^3)
@@ -199,14 +159,8 @@ Francium = Element(87, "Fr", "Francium", 0.39010, 827.0eV, 1.000E+01g / cm^3)
 Radium = Element(88, "Ra", "Radium", 0.38934, 826.0eV, 5.000E+00g / cm^3)
 Actinium = Element(89, "Ac", "Actinium", 0.39202, 841.0eV, 1.007E+01g / cm^3)
 Thorium = Element(90, "Th", "Thorium", 0.38787, 847.0eV, 1.172E+01g / cm^3)
-Protactinium = Element(
-    91,
-    "Pa",
-    "Protactinium",
-    0.39388,
-    878.0eV,
-    1.537E+01g / cm^3,
-)
+Protactinium =
+    Element(91, "Pa", "Protactinium", 0.39388, 878.0eV, 1.537E+01g / cm^3)
 Uranium = Element(92, "U", "Uranium", 0.38651, 890.0eV, 1.895E+01g / cm^3)
 
 elements = [

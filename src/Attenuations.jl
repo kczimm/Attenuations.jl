@@ -7,20 +7,20 @@ using Unitful
 import Unitful: g, cm, keV, MeV
 
 export μ,
-       μᵨ,
-       keV,
-       Elements,
-       Compound,
-       Mixture,
-       Materials,
-       PhotoelectricAbsorption,
-       Coherent,
-       Incoherent,
-       InNuclearField,
-       InElectronField,
-       WithCoherent,
-       WithoutCoherent,
-       data
+    μᵨ,
+    keV,
+    Elements,
+    Compound,
+    Mixture,
+    Materials,
+    PhotoelectricAbsorption,
+    Coherent,
+    Incoherent,
+    InNuclearField,
+    InElectronField,
+    WithCoherent,
+    WithoutCoherent,
+    data
 
 function μ end
 function μᵨ end
