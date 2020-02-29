@@ -33,5 +33,9 @@ function XCOM(body)
         [],
         join(["$k=$v" for (k, v) in body], '&'),
     )
+    if r.status != 200
+        desc = STATUS_CODES[r.status]
+        error("XCOM error - try again")
+    end
     parseresponse(r)
 end
