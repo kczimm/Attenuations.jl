@@ -18,6 +18,11 @@ struct Element{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
     ρ::S
 end
 
+"""
+    μᵨ(e::Element, energies, [a::Type{Attenuation}])
+
+
+"""
 function μᵨ(
     e::Element,
     energies::AbstractArray{<:Unitful.Energy},
