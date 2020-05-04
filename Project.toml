@@ -1,7 +1,7 @@
 name = "Attenuations"
 uuid = "0ff343a0-c53e-11e9-1400-85e187be3184"
 authors = ["Kevin C. Zimmerman <kevinczimmerman@gmail.com>"]
-version = "0.4.0"
+version = "0.5.0"
 
 [deps]
 AxisArrays = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
