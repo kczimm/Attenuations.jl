@@ -23,8 +23,8 @@ end
 end
 
 @testset "Materials - composition sum to one" begin
-    for material ∈ Materials.materials
-        @info material.name
-        @test (material.composition |> values |> sum) ≈ 1 atol = 1e-4
+    for m ∈ Materials
+        @info m.name
+        @test (m.composition |> values |> sum) ≈ 1 atol = 1e-4
     end
 end
