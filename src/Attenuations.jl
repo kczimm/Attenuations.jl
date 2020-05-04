@@ -4,14 +4,15 @@ using AxisArrays
 using HTTP
 using Unitful
 
-import Unitful: g, cm, keV, MeV
+import Unitful: g, cm, eV, keV, MeV
+export eV, keV, MeV
 
 export μ,
     μᵨ,
-    keV,
-    Elements,
+    Element,
     Compound,
     Mixture,
+    Elements,
     Materials,
     PhotoelectricAbsorption,
     Coherent,
@@ -21,9 +22,6 @@ export μ,
     WithCoherent,
     WithoutCoherent,
     data
-
-function μ end
-function μᵨ end
 
 abstract type Attenuation end
 
@@ -39,7 +37,6 @@ struct PhotoelectricAbsorption <: Attenuation end
 
 
 abstract type Scattering <: Attenuation end
-
 """
 Coherent scattering (also known as unmodified, Rayleigh, classical or elastic
 scattering) is one of three forms of photon interaction which occurs when the
@@ -88,15 +85,142 @@ abstract type Total <: Attenuation end
 struct WithCoherent <: Total end
 struct WithoutCoherent <: Total end
 
+const DefaultAttenuation = WithCoherent
+
 abstract type Matter end
+
+μᵨ(
+    m::Matter,
+    energy::T,
+    a::Type{A} = DefaultAttenuation,
+) where {T<:Unitful.Energy,A<:Attenuation} = μᵨ(m, [energy], a)[1]
+
+μ(
+    m::Matter,
+    energy::T,
+    a::Type{A} = DefaultAttenuation,
+) where {T<:Unitful.Energy,A<:Attenuation} = μ(m, [energy], a)[1]
 
 data(a::AbstractArray{T}) where {T<:Unitful.AbstractQuantity} =
     [i.val for i in a.data]
 
+"""
+    Element
+"""
+struct Element{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
+    Z::Int
+    symbol::String
+    name::String
+    ZAratio::Float64
+    I::T
+    ρ::S
+end
+
+Base.show(io::IO, e::Element) = print(
+    io,
+    "$(e.Z) $(e.symbol) $(e.name) Z/A=$(e.ZAratio) I=$(e.I.val)eV ρ=$(e.ρ.val)g/cm³",
+)
+
+function μᵨ(
+    e::Element,
+    energies::AbstractArray{<:Unitful.Energy},
+    a::Type{<:Attenuation} = DefaultAttenuation,
+)
+    body = Dict{String,String}(
+        "Method" => "1",
+        "ZNum" => "$(e.Z)",
+        bodykey(a) => "on",
+        "Energies" => formatenergies(energies),
+    )
+
+    μᵨ = XCOM(body) * cm^2 ./ g
+    AxisArray(μᵨ, Axis{:energy}(energies))
+end
+
+μ(
+    e::Element,
+    energies::AbstractArray{<:Unitful.Energy},
+    a::Type{<:Attenuation} = DefaulAttenuation,
+) = AxisArray(e.ρ * μᵨ(e, energies, a), Axis{:energy}(energies))
+
+"""
+    Compound
+"""
+struct Compound <: Matter
+    formula::String
+end
+
+function μᵨ(
+    c::Compound,
+    energies::AbstractArray{<:Unitful.Energy},
+    a::Type{<:Attenuation} = DefaultAttenuation,
+)
+    body = Dict{String,String}(
+        "Method" => "2",
+        "Formula" => c.formula,
+        bodykey(a) => "on",
+        "Energies" => formatenergies(energies),
+    )
+
+    μᵨ = XCOM(body) * cm^2 ./ g
+    AxisArray(μᵨ, Axis{:energy}(energies))
+end
+
+"""
+    Mixture
+"""
+struct Mixture{T} <: Matter where {T<:AbstractFloat}
+    formulae::Dict{String,T}
+end
+
+function μᵨ(
+    m::Mixture,
+    energies::AbstractArray{<:Unitful.Energy},
+    a::Type{<:Attenuation},
+)
+    body = Dict{String,String}(
+        "Method" => "3",
+        "Formulae" => join(["$k $v" for (k, v) in m.formulae], '\n'),
+        bodykey(a) => "on",
+        "Energies" => formatenergies(energies),
+    )
+
+    μᵨ = XCOM(body) * cm^2 ./ g
+    AxisArray(μᵨ, Axis{:energy}(energies))
+end
+
+struct Material{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
+    name::String
+    ZAratio::Float64
+    I::T
+    ρ::S
+    composition::Dict{Int,Float64}
+end
+
+μᵨ(
+    m::Material,
+    energies::AbstractArray{<:Unitful.Energy},
+    a::Type{<:Attenuation} = DefaultAttenuation,
+) = μᵨ(
+    Mixture(Dict([(Elements[k].symbol, v) for (k, v) in m.composition])),
+    energies,
+    a,
+)
+
+μ(
+    m::Material,
+    energies::AbstractArray{<:Unitful.Energy},
+    a::Type{<:Attenuation},
+) = AxisArray(m.ρ * μᵨ(m, energies, a), Axis{:energy}(energies))
+
+Base.show(io::IO, m::Material) = print(
+    io,
+    "$(m.name) Z/A=$(m.ZAratio) I=$(m.I) ρ=$(m.ρ)\r\n",
+    join(["$k: $v" for (k, v) in m.composition], "\r\n"),
+)
+
 include("xcom.jl")
 
-include("compound.jl")
-include("mixture.jl")
 include("elements.jl")
 include("materials.jl")
 
