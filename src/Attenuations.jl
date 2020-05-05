@@ -21,7 +21,7 @@ export μ,
     InElectronField,
     WithCoherent,
     WithoutCoherent,
-    data
+    val
 
 abstract type Attenuation end
 
@@ -101,8 +101,10 @@ abstract type Matter end
     a::Type{A} = DefaultAttenuation,
 ) where {T<:Unitful.Energy,A<:Attenuation} = μ(m, [energy], a)[1]
 
-data(a::AbstractArray{T}) where {T<:Unitful.AbstractQuantity} =
+val(a::AbstractArray{T}) where {T<:Unitful.AbstractQuantity} =
     [i.val for i in a.data]
+
+val(a::T) where {T<:Unitful.AbstractQuantity} = a.val
 
 """
     Element

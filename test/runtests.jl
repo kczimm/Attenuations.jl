@@ -31,3 +31,7 @@ end
         @test (m.composition |> values |> sum) ≈ 1 atol = 1e-4
     end
 end
+
+@testset "Values from data" begin
+    @test typeof(val(μ(Elements.Gold, 70keV))) <: AbstractFloat
+end
