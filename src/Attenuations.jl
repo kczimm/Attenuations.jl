@@ -142,7 +142,7 @@ end
 μ(
     e::Element,
     energies::AbstractArray{<:Unitful.Energy},
-    a::Type{<:Attenuation} = DefaulAttenuation,
+    a::Type{<:Attenuation} = DefaultAttenuation,
 ) = AxisArray(e.ρ * μᵨ(e, energies, a), Axis{:energy}(energies))
 
 """
