@@ -20,6 +20,9 @@ end
 @testset "Materials - Table 2" begin
     @test μᵨ(Materials.water, 70keV) ≈ 0.1929 * cm^2 / g
     @test μ(Materials.water, 70keV) ≈ 0.1929 * cm^-1
+
+    energies = 20keV:1keV:120keV
+    @test length(μ(Elements.Gold, energies)) == length(energies)
 end
 
 @testset "Materials - composition sum to one" begin
