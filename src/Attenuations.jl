@@ -106,6 +106,8 @@ data(a::AbstractArray{T}) where {T<:Unitful.AbstractQuantity} =
 
 """
     Element
+
+An element of the periodic table.
 """
 struct Element{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
     Z::Int
@@ -210,7 +212,7 @@ end
 μ(
     m::Material,
     energies::AbstractArray{<:Unitful.Energy},
-    a::Type{<:Attenuation},
+    a::Type{<:Attenuation} = DefaultAttenuation,
 ) = AxisArray(m.ρ * μᵨ(m, energies, a), Axis{:energy}(energies))
 
 Base.show(io::IO, m::Material) = print(
