@@ -1,8 +1,13 @@
 using Documenter, Attenuations
 
-makedocs(
-    sitename = "Attenuations",
-    modules = [Attenuations],
-    pages = ["Home" => "index.md", "Mechanisms" => "mechanisms.md"],
+makedocs(;
+    modules=[Attenuations],
+    format=Documenter.HTML(),
+    pages=[
+        "Home" => "index.md",
+    ],
+    repo="https://github.com/kczimm/Attenuations.jl/blob/{commit}{path}#L{line}",
+    sitename="Attenuations.jl",
+    assets=String[],
 )
 deploydocs(repo = "github.com/kczimm/Attenuations.jl")
