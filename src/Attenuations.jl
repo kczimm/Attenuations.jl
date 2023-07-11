@@ -171,6 +171,14 @@ struct Compound <: Matter
     formula::String
 end
 
+"""
+    μᵨ(
+        c::Compound,
+        energies::AbstractArray{<:Unitful.Energy},
+        a::Type{<:Attenuation} = DefaultAttenuation,
+    )
+Mass attenuation coefficient for a compound.
+"""
 function μᵨ(
     c::Compound,
     energies::AbstractArray{<:Unitful.Energy},
@@ -194,6 +202,14 @@ struct Mixture{T} <: Matter where {T<:AbstractFloat}
     formulae::Dict{String,T}
 end
 
+"""
+    μᵨ(
+        m::Mixture,
+        energies::AbstractArray{<:Unitful.Energy},
+        a::Type{<:Attenuation},
+    )
+Mass attenuation coefficient for a mixture.
+"""
 function μᵨ(
     m::Mixture,
     energies::AbstractArray{<:Unitful.Energy},
@@ -218,6 +234,14 @@ struct Material{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
     composition::Dict{Int,Float64}
 end
 
+"""
+    μᵨ(
+        m::Material,
+        energies::AbstractArray{<:Unitful.Energy},
+        a::Type{<:Attenuation} = DefaultAttenuation,
+    )
+Mass attenuation coefficient for a material.
+"""
 μᵨ(
     m::Material,
     energies::AbstractArray{<:Unitful.Energy},
@@ -228,6 +252,15 @@ end
     a,
 )
 
+"""
+    μ(
+        m::Material,
+        energies::AbstractArray{<:Unitful.Energy},
+        a::Type{<:Attenuation} = DefaultAttenuation,
+    )
+
+Linear attenuation coefficient for a material.
+"""
 μ(
     m::Material,
     energies::AbstractArray{<:Unitful.Energy},
