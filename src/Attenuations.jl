@@ -125,6 +125,14 @@ Base.show(io::IO, e::Element) = print(
     "$(e.Z) $(e.symbol) $(e.name) Z/A=$(e.ZAratio) I=$(e.I.val)eV ρ=$(e.ρ.val)g/cm³",
 )
 
+"""
+    μᵨ(
+        e::Element,
+        energies::AbstractArray{<:Unitful.Energy},
+        a::Type{<:Attenuation} = DefaultAttenuation,
+    )
+Mass attenuation coefficient for an element.
+"""
 function μᵨ(
     e::Element,
     energies::AbstractArray{<:Unitful.Energy},
@@ -141,6 +149,15 @@ function μᵨ(
     AxisArray(μᵨ, Axis{:energy}(energies))
 end
 
+"""
+    μ(
+        e::Element,
+        energies::AbstractArray{<:Unitful.Energy},
+        a::Type{<:Attenuation} = DefaultAttenuation,
+    )
+
+Linear attenuation coefficient for an element.
+"""
 μ(
     e::Element,
     energies::AbstractArray{<:Unitful.Energy},
