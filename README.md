@@ -1,4 +1,4 @@
-# Attenuations.jl [![Build Status](https://travis-ci.org/kczimm/Attenuations.jl.svg?branch=master)](https://travis-ci.org/kczimm/Attenuations.jl) [![Coverage Status](https://coveralls.io/repos/github/kczimm/Attenuations.jl/badge.svg?branch=master)](https://coveralls.io/github/kczimm/Attenuations.jl?branch=master) [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://kczimm.github.io/Attenuations.jl/dev)
+# Attenuations.jl [![Build Status](https://github.com/kczimm/Attenuations.jl/workflows/CI/badge.svg)](https://github.com/kczimm/Attenuations.jl/actions) [![Coverage Status](https://coveralls.io/repos/github/kczimm/Attenuations.jl/badge.svg?branch=master)](https://coveralls.io/github/kczimm/Attenuations.jl?branch=master) [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://kczimm.github.io/Attenuations.jl/dev)
 NIST XCOM x-ray attenuations in Julia.
 
 # Basic Usage

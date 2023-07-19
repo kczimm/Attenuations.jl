@@ -89,23 +89,6 @@ const DefaultAttenuation = WithCoherent
 
 abstract type Matter end
 
-μᵨ(
-    m::Matter,
-    energy::T,
-    a::Type{A} = DefaultAttenuation,
-) where {T<:Unitful.Energy,A<:Attenuation} = μᵨ(m, [energy], a)[1]
-
-μ(
-    m::Matter,
-    energy::T,
-    a::Type{A} = DefaultAttenuation,
-) where {T<:Unitful.Energy,A<:Attenuation} = μ(m, [energy], a)[1]
-
-val(a::AbstractArray{T}) where {T<:Unitful.AbstractQuantity} =
-    [i.val for i in a.data]
-
-val(a::T) where {T<:Unitful.AbstractQuantity} = a.val
-
 """
     Element
 
@@ -119,11 +102,67 @@ struct Element{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
     I::T
     ρ::S
 end
-
 Base.show(io::IO, e::Element) = print(
     io,
     "$(e.Z) $(e.symbol) $(e.name) Z/A=$(e.ZAratio) I=$(e.I.val)eV ρ=$(e.ρ.val)g/cm³",
 )
+
+"""
+    Compound
+"""
+struct Compound <: Matter
+    formula::String
+end
+
+"""
+    Mixture
+"""
+struct Mixture{T} <: Matter where {T<:AbstractFloat}
+    formulae::Dict{String,T}
+end
+
+struct Material{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
+    name::String
+    ZAratio::Float64
+    I::T
+    ρ::S
+    composition::Dict{Int,Float64}
+end
+Base.show(io::IO, m::Material) = print(
+    io,
+    "$(m.name) Z/A=$(m.ZAratio) I=$(m.I) ρ=$(m.ρ)\r\n",
+    join(["$k: $v" for (k, v) in m.composition], "\r\n"),
+)
+
+val(a::AbstractArray{T}) where {T<:Unitful.AbstractQuantity} =
+[i.val for i in a.data]
+
+val(a::T) where {T<:Unitful.AbstractQuantity} = a.val
+
+"""
+    μᵨ(
+        material::Union{Matter, Element, Compound, Mixture, Material},
+        energies::AbstractArray{<:Unitful.Energy},
+        a::Type{A} = DefaultAttenuation,
+    )
+
+Calculate the mass attenuation coefficient for a given material.
+
+The behavior of this function depends on the type of the first argument:
+
+- `Matter`: the `energies` array is transformed into a single energy value.
+- `Element`: The function uses the atomic number of the element (`e.Z`) to create a request body for the XCOM service, and returns the mass attenuation coefficient in cm²/g for the given energies.
+- `Compound`: Similar to `Element`, but uses the compound's formula instead of the atomic number.
+- `Mixture`: The function creates a request body with a string representation of the mixture's formulae and uses the XCOM service to calculate the mass attenuation coefficient for the given energies.
+- `Material`: The function converts the material's composition into a `Mixture` and then proceeds as in the `Mixture` case.
+
+The `a` argument determines the type of attenuation to apply and defaults to `DefaultAttenuation`.
+"""
+μᵨ(
+    m::Matter,
+    energy::T,
+    a::Type{A} = DefaultAttenuation,
+) where {T<:Unitful.Energy,A<:Attenuation} = μᵨ(m, [energy], a)[1]
 
 function μᵨ(
     e::Element,
@@ -139,19 +178,6 @@ function μᵨ(
 
     μᵨ = XCOM(body) * cm^2 ./ g
     AxisArray(μᵨ, Axis{:energy}(energies))
-end
-
-μ(
-    e::Element,
-    energies::AbstractArray{<:Unitful.Energy},
-    a::Type{<:Attenuation} = DefaultAttenuation,
-) = AxisArray(e.ρ * μᵨ(e, energies, a), Axis{:energy}(energies))
-
-"""
-    Compound
-"""
-struct Compound <: Matter
-    formula::String
 end
 
 function μᵨ(
@@ -170,13 +196,6 @@ function μᵨ(
     AxisArray(μᵨ, Axis{:energy}(energies))
 end
 
-"""
-    Mixture
-"""
-struct Mixture{T} <: Matter where {T<:AbstractFloat}
-    formulae::Dict{String,T}
-end
-
 function μᵨ(
     m::Mixture,
     energies::AbstractArray{<:Unitful.Energy},
@@ -193,14 +212,6 @@ function μᵨ(
     AxisArray(μᵨ, Axis{:energy}(energies))
 end
 
-struct Material{T,S} <: Matter where {T<:Unitful.Energy,S<:Unitful.Density}
-    name::String
-    ZAratio::Float64
-    I::T
-    ρ::S
-    composition::Dict{Int,Float64}
-end
-
 μᵨ(
     m::Material,
     energies::AbstractArray{<:Unitful.Energy},
@@ -211,17 +222,40 @@ end
     a,
 )
 
+"""
+    μ(
+        material::Union{Element, Material, Matter},
+        energies::Union{AbstractArray{<:Unitful.Energy}, T},
+        a::Type{<:Attenuation} = DefaultAttenuation,
+    )
+
+Calculate the linear attenuation coefficient for a given material.
+
+The behavior of this function depends on the type of the first argument:
+
+- `Element`: The function multiplies the density of the element (`e.ρ`) with the mass attenuation coefficient (`μᵨ`) for the given energies and returns the result.
+- `Material`: The function multiplies the density of the material (`m.ρ`) with the mass attenuation coefficient (`μᵨ`) for the given energies and returns the result.
+- `Matter`: If a single energy value is given instead of an array, the function converts it into a single-element array and calculates the linear attenuation coefficient for that energy.
+
+The `a` argument determines the type of attenuation to apply and defaults to `DefaultAttenuation`.
+"""
+μ(
+    e::Element,
+    energies::AbstractArray{<:Unitful.Energy},
+    a::Type{<:Attenuation} = DefaultAttenuation,
+) = AxisArray(e.ρ * μᵨ(e, energies, a), Axis{:energy}(energies))
+
 μ(
     m::Material,
     energies::AbstractArray{<:Unitful.Energy},
     a::Type{<:Attenuation} = DefaultAttenuation,
 ) = AxisArray(m.ρ * μᵨ(m, energies, a), Axis{:energy}(energies))
 
-Base.show(io::IO, m::Material) = print(
-    io,
-    "$(m.name) Z/A=$(m.ZAratio) I=$(m.I) ρ=$(m.ρ)\r\n",
-    join(["$k: $v" for (k, v) in m.composition], "\r\n"),
-)
+μ(
+    m::Matter,
+    energy::T,
+    a::Type{A} = DefaultAttenuation,
+) where {T<:Unitful.Energy,A<:Attenuation} = μ(m, [energy], a)[1]
 
 include("xcom.jl")
 
